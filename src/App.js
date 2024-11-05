@@ -1,23 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import Chessboard from 'chessboardjsx';
+import { Chess } from 'chess.js';
 
 function App() {
+  const [game, setGame] = useState(new Chess());
+
+  const handleMove = (move) => {
+    try {
+      // Intenta realizar el movimiento
+      const result = game.move(move);
+
+      if (result) {
+        // Si el movimiento es válido, actualiza el estado con la posición actual
+        setGame(new Chess(game.fen()));
+      } else {
+        console.warn("Movimiento inválido:", move);
+      }
+    } catch (error) {
+      console.error("Error en el movimiento:", error);
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>UCChess</h1>
+      <Chessboard
+        position={game.fen()}
+        onDrop={({ sourceSquare, targetSquare }) => 
+          handleMove({
+            from: sourceSquare,
+            to: targetSquare,
+            promotion: 'q' // Promueve a reina por defecto
+          })
+        }
+      />
     </div>
   );
 }
